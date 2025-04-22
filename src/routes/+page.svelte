@@ -4,11 +4,15 @@
 	import type LocomotiveScrollType from 'locomotive-scroll';
 	import 'locomotive-scroll/dist/locomotive-scroll.css';
 	import Image from '$lib/components/multimedia/Image.svelte';
+	import { progressStore, section3ScaleStore } from '$lib/stores/scrollStore';
 	// import silhouette from '$lib/images/silhouette.png';
 
 	let scrollElement: HTMLElement;
 	let scrollInstance: LocomotiveScrollType | null = null;
 	let progress = 0; // Reactive variable for progress percentage
+
+	// Reactive variable for Section 3 scale
+	$: section3Scale = $section3ScaleStore;
 
 	// Remove Section 3 observer state
 	// let section3El: HTMLElement;
@@ -30,10 +34,24 @@
 					});
 
 					instance.on('scroll', (event) => {
+						// Update global progress
+						let calculatedProgress = 0;
 						if (event.limit.x > 0) {
-							progress = (event.scroll.x / event.limit.x) * 100;
+							calculatedProgress = (event.scroll.x / event.limit.x) * 100;
+						}
+						progress = calculatedProgress;
+						progressStore.set(calculatedProgress);
+
+						// Update Section 3 scale based on its visibility and progress
+						const section3Element = event.currentElements['section-3'];
+						if (section3Element) {
+							const sectionProgress = section3Element.progress;
+							const targetMaxScale = 1.3; // How much to scale up (e.g., 1.3 = 30% bigger)
+							const scale = 1 + sectionProgress * (targetMaxScale - 1);
+							section3ScaleStore.set(scale);
 						} else {
-							progress = 0;
+							// Reset scale when section is not in view
+							section3ScaleStore.set(1);
 						}
 					});
 
@@ -74,14 +92,7 @@
 	></div>
 </div>
 
-<!-- Fixed Background Container (Always Present) -->
-<div class="fixed inset-0 z-[-1]" aria-hidden="true">
-	<Image
-		src="https://trentbrew.pockethost.io/api/files/swvnum16u65or8w/skuqkze9dkfnu6p/image_41_7UG2diIMzf.png?token="
-		alt="Fixed background texture"
-		classes="h-full w-full object-cover"
-	/>
-</div>
+<!-- Remove Fixed Background Container -->
 
 <!-- Main scroll container -->
 <div class="wrapper flex h-screen w-max" bind:this={scrollElement} data-scroll-container>
@@ -136,12 +147,11 @@
 	</div>
 	<!-- Section 2 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[75vw] flex-shrink-0 items-center justify-center bg-blue-900 p-16 text-white"
+		class="horizontal-section font-maelstromsans z-10 flex h-screen w-[75vw] flex-shrink-0 items-center justify-center bg-blue-900 p-16 text-white"
 		data-scroll-section
 	>
-		<!-- <div class="flex w-full max-w-6xl gap-16">
-
-			<div class="flex w-1/3 flex-col justify-between">
+		<div class="flex w-full max-w-6xl gap-16 bg-red-500">
+			<!-- <div class="flex w-1/3 flex-col justify-between">
 				<h2 class="font-maelstrom text-6xl font-bold uppercase">Overview</h2>
 				<p class="text-sm">Scroll / Drag.</p>
 			</div>
@@ -154,23 +164,44 @@
 					coordinated urban planning and forward thinking.
 				</p>
 
-			</div>
-		</div> -->
+			</div> -->
+		</div>
 	</div>
-	<!-- Section 3 (Placeholder) -->
-	<div class="horizontal-section flex h-screen w-[100vw] flex-shrink-0" data-scroll-section>
-		<!-- Content for section 3 can go here if needed, it will scroll over the fixed background -->
+	<!-- Section 3 (Uses Sticky Background Image) -->
+	<div
+		id="section-3"
+		class="horizontal-section relative -ml-64 flex h-screen w-[100vw] flex-shrink-0"
+		data-scroll-section
+	>
+		<!-- Sticky Background Image (within the section) -->
+		<div
+			data-scroll
+			data-scroll-speed={section3Scale}
+			class="absolute inset-0 z-[-10] origin-center"
+			style="transform: scale({section3Scale}); transition: transform 0.1s linear;"
+		>
+			<Image
+				src="https://trentbrew.pockethost.io/api/files/swvnum16u65or8w/skuqkze9dkfnu6p/image_41_7UG2diIMzf.png?token="
+				alt="Sticky background texture"
+				classes="h-full w-full object-cover"
+				data-scroll-speed={-10}
+			/>
+		</div>
+		<!-- Content for section 3 -->
+		<div class="relative z-10 flex h-full items-center justify-center">
+			<!-- <h2 class="text-4xl text-white">Section 3 Content Over Background</h2> -->
+		</div>
 	</div>
 	<!-- Section 4 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[200vw] flex-shrink-0 items-center justify-center bg-white"
+		class="horizontal-section font-maelstromsans flex h-screen w-[75vw] flex-shrink-0 items-center justify-center bg-white"
 		data-scroll-section
 	>
 		Section 4 Content
 	</div>
 	<!-- Section 5 (Image) - Placeholder -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[120vw] flex-shrink-0 items-center justify-center bg-blue-900"
+		class="horizontal-section font-maelstromsans flex h-screen w-[120vw] flex-shrink-0 items-center justify-center bg-red-700"
 		data-scroll-section
 	>
 		<!-- <Image
@@ -188,7 +219,7 @@
 	</div>
 	<!-- Section 7 (Image) - Placeholder -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[180vw] flex-shrink-0 items-center justify-center"
+		class="horizontal-section font-maelstromsans flex h-screen w-[75vw] flex-shrink-0 items-center justify-center bg-blue-700"
 		data-scroll-section
 	>
 		<!-- <Image
@@ -199,7 +230,7 @@
 	</div>
 	<!-- Section 8 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[200vw] flex-shrink-0 items-center justify-center text-black"
+		class="horizontal-section font-maelstromsans flex h-screen w-[75vw] flex-shrink-0 items-center justify-center"
 		data-scroll-section
 	>
 		Section 8 Content

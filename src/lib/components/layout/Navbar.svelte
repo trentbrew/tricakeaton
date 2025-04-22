@@ -3,7 +3,9 @@
 	import { progressStore } from '$lib/stores/scrollStore';
 
 	function openMenu() {
-		isMenuOpen.set(true);
+		console.log('openMenu');
+		alert('menu is under construction');
+		// isMenuOpen.set(true);
 	}
 
 	$: progress = $progressStore;
@@ -33,14 +35,14 @@
 	<!-- Middle Section: Rotated Text -->
 	<div class="flex flex-grow items-center justify-center py-8">
 		<span class="rotate-180 text-sm tracking-widest uppercase [writing-mode:vertical-rl]">
-			Placeholder Rotated Text
+			TRICA DANIELLE KEATON
 		</span>
 	</div>
 
 	<!-- Bottom Section: Logo/Branding -->
 	<div class="flex h-20 w-full flex-col items-center justify-center space-y-2 text-center">
-		<span class="font-bold">XXX</span>
+		<span class="font-bold"></span>
 		<div class="h-px w-1/2" class:bg-white={isAtTop} class:bg-black={!isAtTop}></div>
-		<span class="text-xs uppercase">Amsterdam</span>
+		<span class="text-xs uppercase">...</span>
 	</div>
 </nav>
