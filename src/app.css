@@ -31,3 +31,22 @@ body {
 .c-scrollbar {
 	display: none !important;
 }
+
+/* Intro Animation */
+@keyframes swipe-out-left {
+	from {
+		transform: translateX(0%);
+	}
+	to {
+		transform: translateX(-100%);
+	}
+}
+
+.intro-overlay {
+	/* Initial state - visible */
+	transform: translateX(0%);
+}
+
+.intro-swipe-out {
+	animation: swipe-out-left 0.8s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+}

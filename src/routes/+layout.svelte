@@ -4,6 +4,8 @@
 	import { isMenuOpen } from '$lib/stores/menuStore';
 	import { ScrollWrapper } from '@shentohendriks/svelte-smoothscroll';
 	import '../app.css';
+	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	let { children } = $props();
 
@@ -16,7 +18,25 @@
 			smooth: true
 		}
 	};
+
+	let introOverlayEl: HTMLDivElement;
+
+	onMount(() => {
+		if (browser) {
+			// Add a short delay before starting animation
+			setTimeout(() => {
+				introOverlayEl?.classList.add('intro-swipe-out');
+			}, 250); // Adjust delay ms as needed
+		}
+	});
 </script>
+
+<!-- Intro Overlay -->
+<div
+	bind:this={introOverlayEl}
+	class="intro-overlay fixed inset-0 z-[100] bg-red-600"
+	aria-hidden="true"
+></div>
 
 <div class="relative flex min-h-screen">
 	<Navbar />

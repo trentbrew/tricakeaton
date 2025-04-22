@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import type LocomotiveScrollType from 'locomotive-scroll';
 	import 'locomotive-scroll/dist/locomotive-scroll.css';
@@ -10,8 +10,13 @@
 	let scrollInstance: LocomotiveScrollType | null = null;
 	let progress = 0; // Reactive variable for progress percentage
 
+	// Remove Section 3 observer state
+	// let section3El: HTMLElement;
+	// let showFixedBg = false;
+	// let section3Observer: IntersectionObserver;
+
 	onMount(() => {
-		let currentInstance: LocomotiveScrollType | null = null; // Temporary variable for cleanup context
+		let currentInstance: LocomotiveScrollType | null = null;
 
 		import('locomotive-scroll')
 			.then(({ default: LocomotiveScroll }) => {
@@ -32,7 +37,6 @@
 						}
 					});
 
-					// Assign to module-level variable AND temporary variable
 					scrollInstance = instance;
 					currentInstance = instance;
 				}
@@ -41,25 +45,42 @@
 				console.error('Failed to load Locomotive Scroll', error);
 			});
 
+		// Remove IntersectionObserver setup
+		/*
+		if (browser && section3El) {
+			section3Observer = new IntersectionObserver(...);
+			section3Observer.observe(section3El);
+		}
+		*/
+
 		// Cleanup function
 		return () => {
-			// Use the temporary variable captured in this closure
 			if (currentInstance) {
-				// Rely on destroy() to clean up listeners
 				currentInstance.destroy();
-				scrollInstance = null; // Also clear the module-level ref
+				scrollInstance = null;
 				currentInstance = null;
 			}
+			// Remove observer disconnect
+			// section3Observer?.disconnect();
 		};
 	});
 </script>
 
 <!-- Progress Bar -->
-<div class="progress-bar-container fixed top-0 left-0 h-screen w-[5px]">
+<div class="progress-bar-container fixed top-0 left-0 z-50 h-screen w-[5px]">
 	<div
 		class="progress-bar h-full w-full origin-top bg-[#ccc] transition-transform duration-50 ease-linear"
-		style="transform: scaleY({progress});"
+		style="transform: scaleY({progress / 100});"
 	></div>
+</div>
+
+<!-- Fixed Background Container (Always Present) -->
+<div class="fixed inset-0 z-[-1]" aria-hidden="true">
+	<Image
+		src="https://trentbrew.pockethost.io/api/files/swvnum16u65or8w/skuqkze9dkfnu6p/image_41_7UG2diIMzf.png?token="
+		alt="Fixed background texture"
+		classes="h-full w-full object-cover"
+	/>
 </div>
 
 <!-- Main scroll container -->
@@ -96,7 +117,7 @@
 					text-[21.5vw]
 					leading-none
 					font-normal
-					text-gray-400
+					text-gray-300
 					grayscale
 					transition-all
 					duration-300
@@ -115,17 +136,16 @@
 	</div>
 	<!-- Section 2 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[100vw] flex-shrink-0 items-center justify-center bg-white p-16 text-black"
+		class="horizontal-section font-maelstromsans flex h-screen w-[75vw] flex-shrink-0 items-center justify-center bg-blue-900 p-16 text-white"
 		data-scroll-section
 	>
-		<!-- Inner container for layout -->
-		<div class="flex w-full max-w-6xl gap-16">
-			<!-- Left Column: Large Heading -->
+		<!-- <div class="flex w-full max-w-6xl gap-16">
+
 			<div class="flex w-1/3 flex-col justify-between">
 				<h2 class="font-maelstrom text-6xl font-bold uppercase">Overview</h2>
 				<p class="text-sm">Scroll / Drag.</p>
 			</div>
-			<!-- Right Column: Paragraph -->
+
 			<div class="w-2/3">
 				<p class="text-xl">
 					The 17th-century Amsterdam canals are a world renowned location of cultural and historical
@@ -133,42 +153,35 @@
 					and engineering. The city's canal ring and its design is an early example of large-scale,
 					coordinated urban planning and forward thinking.
 				</p>
-				<!-- Add smaller captions/details here if needed -->
+
 			</div>
-		</div>
+		</div> -->
 	</div>
-	<!-- Section 3 (Image) - Placeholder -->
-	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[100vw] flex-shrink-0 items-center justify-center"
-		data-scroll-section
-	>
-		<Image
-			src="/placeholder-image.jpg"
-			alt="Placeholder image 2 - please replace src and alt"
-			classes="h-full w-full object-cover"
-		/>
+	<!-- Section 3 (Placeholder) -->
+	<div class="horizontal-section flex h-screen w-[100vw] flex-shrink-0" data-scroll-section>
+		<!-- Content for section 3 can go here if needed, it will scroll over the fixed background -->
 	</div>
 	<!-- Section 4 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[200vw] flex-shrink-0 items-center justify-center"
+		class="horizontal-section font-maelstromsans flex h-screen w-[200vw] flex-shrink-0 items-center justify-center bg-white"
 		data-scroll-section
 	>
 		Section 4 Content
 	</div>
 	<!-- Section 5 (Image) - Placeholder -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[120vw] flex-shrink-0 items-center justify-center"
+		class="horizontal-section font-maelstromsans flex h-screen w-[120vw] flex-shrink-0 items-center justify-center bg-blue-900"
 		data-scroll-section
 	>
-		<Image
+		<!-- <Image
 			src="/placeholder-image-3.jpg"
 			alt="Placeholder image 3 - please replace src and alt"
 			classes="h-full w-full object-cover"
-		/>
+		/> -->
 	</div>
 	<!-- Section 6 (Color Block) -->
 	<div
-		class="horizontal-section font-maelstromsans flex h-screen w-[100vw] flex-shrink-0 items-center justify-center"
+		class="horizontal-section font-maelstromsans flex h-screen w-[100vw] flex-shrink-0 items-center justify-center bg-white"
 		data-scroll-section
 	>
 		Section 6 Content
@@ -178,11 +191,11 @@
 		class="horizontal-section font-maelstromsans flex h-screen w-[180vw] flex-shrink-0 items-center justify-center"
 		data-scroll-section
 	>
-		<Image
+		<!-- <Image
 			src="/placeholder-image-4.jpg"
 			alt="Placeholder image 4 - please replace src and alt"
 			classes="h-full w-full object-cover"
-		/>
+		/> -->
 	</div>
 	<!-- Section 8 (Color Block) -->
 	<div
@@ -196,11 +209,11 @@
 		class="horizontal-section font-maelstromsans flex h-screen w-[100vw] flex-shrink-0 items-center justify-center"
 		data-scroll-section
 	>
-		<Image
+		<!-- <Image
 			src="/placeholder-image-5.jpg"
 			alt="Placeholder image 5 - please replace src and alt"
 			classes="h-full w-full object-cover"
-		/>
+		/> -->
 	</div>
 	<!-- Section 10 (Color Block) -->
 	<div

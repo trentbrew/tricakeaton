@@ -19,4 +19,4 @@
 	};
 </script>
 
-<img {src} {alt} class={classes} {...dataScrollAttrs} {...$$restProps} />
+<img {src} {alt} class={classes} loading="eager" {...dataScrollAttrs} {...$$restProps} />
