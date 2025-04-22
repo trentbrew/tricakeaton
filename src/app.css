@@ -1,3 +1,33 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
+
+/* Welcome lib/assets/fonts! */
+/*
+  NOTE: The following @font-face rule references font files in /lib/assets/fonts.
+  If you see 404 errors like "Not found: /lib/assets/fonts/MyCustomFont.woff",
+  ensure that the font files exist at that path and are included in your SvelteKit static assets.
+  By default, SvelteKit only serves files from the /static directory at the project root.
+  To fix the 404, move your font files to /static/assets/fonts and update the URLs below to:
+    url('/assets/fonts/MyCustomFont.woff2') format('woff2'),
+    url('/assets/fonts/MyCustomFont.woff') format('woff');
+  See: https://kit.svelte.dev/docs/static-adapter#serving-static-files
+*/
+@font-face {
+	font-family: 'MyCustomFont';
+	src:
+		url('/lib/assets/fonts/MyCustomFont.woff2') format('woff2'),
+		url('/lib/assets/fonts/MyCustomFont.woff') format('woff');
+	font-weight: normal;
+	font-style: normal;
+	font-display: swap;
+}
+
+/* Example usage: apply to body */
+body {
+	font-family: 'MyCustomFont', system-ui, sans-serif;
+}
+
+.c-scrollbar {
+	display: none !important;
+}
